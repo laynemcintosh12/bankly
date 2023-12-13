@@ -17,7 +17,8 @@ const { authUser, requireLogin, requireAdmin } = require('../middleware/auth');
 
 router.get('/', authUser, requireLogin, async function(req, res, next) {
   try {
-    let users = await User.getAll();
+    let users = await User.getAll();  // this returns email and phone as well, need to use new model function to return only basic info
+    // let users = await User.getBasicInfo();
     return res.json({ users });
   } catch (err) {
     return next(err);
@@ -63,7 +64,7 @@ router.get('/:username', authUser, requireLogin, async function(
  *
  */
 
-router.patch('/:username', authUser, requireLogin, requireAdmin, async function(
+router.patch('/:username', authUser, requireLogin, requireAdmin, async function(  // need to remove requireAdmin for user to update self
   req,
   res,
   next
@@ -76,6 +77,13 @@ router.patch('/:username', authUser, requireLogin, requireAdmin, async function(
     // get fields to change; remove token so we don't try to change it
     let fields = { ...req.body };
     delete fields._token;
+
+    // should validate with JSON Schema Here
+    /* const validator = jsonschema.validate(fields, userUpdateSchema);
+          if (!validator.valid) {
+          const errs = validator.errors.map((e) => e.stack);
+          throw new ExpressError(errs, 400);
+        } */
 
     let user = await User.update(req.params.username, fields);
     return res.json({ user });
@@ -100,7 +108,8 @@ router.delete('/:username', authUser, requireAdmin, async function(
   next
 ) {
   try {
-    User.delete(req.params.username);
+    User.delete(req.params.username);   // Needs to await
+    // await User.delete(req.params.username);
     return res.json({ message: 'deleted' });
   } catch (err) {
     return next(err);

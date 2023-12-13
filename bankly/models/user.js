@@ -84,13 +84,26 @@ class User {
       `SELECT username,
                 first_name,
                 last_name,
-                email,
+                email, 
                 phone
             FROM users 
             ORDER BY username`
     );
     return result.rows;
   }
+
+  /** Returns list of Users basic Info:
+   * 
+   * [{username, first_name, last_name}]
+   * 
+   * static async getBasicInfo(username, password){
+   *    const result = await db.query(
+   *      `SELECT username, first_name, last_name
+   *       FROM users
+   *       ORDER BY username);
+   *    return result.rows
+   * }
+   */
 
   /** Returns user info: {username, first_name, last_name, email, phone}
    *
